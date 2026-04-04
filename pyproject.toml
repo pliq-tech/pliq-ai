@@ -1,7 +1,45 @@
 [project]
 name = "pliq-ai"
 version = "0.1.0"
-description = "Add your description here"
+description = "Pliq AI service - fraud detection, matching, and lease analysis"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "google-genai>=1.14.0",
+    "grpcio>=1.73.0",
+    "grpcio-tools>=1.73.0",
+    "grpcio-health-checking>=1.73.0",
+    "protobuf>=6.31.0",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.9.1",
+    "Pillow>=11.2.1",
+    "numpy>=2.3.0",
+    "scikit-learn>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=1.0.0",
+    "ruff>=0.11.12",
+    "mypy>=1.16.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["src", "tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]

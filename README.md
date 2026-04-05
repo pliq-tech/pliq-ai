@@ -5,7 +5,7 @@ Python AI service for the Pliq platform. Provides fraud detection, tenant-listin
 ## Prerequisites
 
 - [Python](https://www.python.org/) >= 3.14
-- [uv](https://docs.astral.sh/uv/) >= 0.7.12
+- [uv](https://docs.astral.sh/uv/) >= 0.11.3
 
 ## Setup
 

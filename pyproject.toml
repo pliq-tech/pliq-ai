@@ -5,6 +5,7 @@ description = "Pliq AI service - fraud detection, matching, and lease analysis"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "google-adk>=1.5.0",
     "google-genai>=1.14.0",
     "grpcio>=1.73.0",
     "grpcio-tools>=1.73.0",

@@ -1,71 +1,43 @@
 syntax = "proto3";
 
-package pliq.ai.v1;
+package pliq.matching;
 
 service MatchingService {
-  rpc MatchProperties(MatchRequest) returns (MatchResponse);
-  rpc CalculateLifestyleScore(LifestyleScoreRequest) returns (LifestyleScoreResponse);
+  rpc FindMatches(FindMatchesRequest) returns (FindMatchesResponse);
+  rpc ScoreCompatibility(CompatibilityRequest) returns (CompatibilityResponse);
 }
 
-message TenantProfile {
+message FindMatchesRequest {
   string tenant_id = 1;
-  string commute_mode = 2;
-  int32 max_commute_minutes = 3;
-  float latitude_work = 4;
-  float longitude_work = 5;
-  int32 noise_tolerance = 6;
-  bool has_pets = 7;
-  string pet_type = 8;
-  bool works_from_home = 9;
-  int32 social_preference = 10;
-  float budget_min = 11;
-  float budget_max = 12;
-  repeated string preferred_amenities = 13;
+  TenantPreferences preferences = 2;
+  int32 max_results = 3;
 }
 
-message ListingProfile {
-  string listing_id = 1;
-  float price = 2;
-  float latitude = 3;
-  float longitude = 4;
-  int32 noise_level = 5;
-  bool pets_allowed = 6;
-  repeated string pet_restrictions = 7;
-  repeated string amenities = 8;
-  repeated string transport_links = 9;
-  int32 building_social_score = 10;
+message TenantPreferences {
+  double max_rent = 1;
+  string currency = 2;
+  int32 min_bedrooms = 3;
+  double min_area_sqm = 4;
+  string preferred_location_hash = 5;
+  string move_in_after = 6;
 }
 
-message MatchRequest {
-  string request_id = 1;
-  TenantProfile tenant = 2;
-  repeated ListingProfile candidates = 3;
-  int32 top_n = 4;
-}
-
-message MatchResponse {
-  string request_id = 1;
-  repeated MatchResult results = 2;
+message FindMatchesResponse {
+  repeated MatchResult matches = 1;
 }
 
 message MatchResult {
   string listing_id = 1;
-  float overall_score = 2;
-  float commute_score = 3;
-  float noise_score = 4;
-  float amenity_score = 5;
-  float social_score = 6;
-  float budget_score = 7;
-  string narrative = 8;
+  double compatibility_score = 2;
+  repeated string match_reasons = 3;
 }
 
-message LifestyleScoreRequest {
-  string request_id = 1;
-  TenantProfile tenant = 2;
-  ListingProfile listing = 3;
+message CompatibilityRequest {
+  string tenant_id = 1;
+  string listing_id = 2;
 }
 
-message LifestyleScoreResponse {
-  string request_id = 1;
-  MatchResult result = 2;
+message CompatibilityResponse {
+  double score = 1;
+  repeated string factors = 2;
 }

@@ -1,115 +1,38 @@
 syntax = "proto3";
 
-package pliq.ai.v1;
+package pliq.fraud;
 
 service FraudDetectionService {
-  rpc AnalyzeImage(AnalyzeImageRequest) returns (FraudReport);
-  rpc DetectPriceAnomaly(PriceAnomalyRequest) returns (PriceAnomalyReport);
-  rpc DetectDuplicateListing(DuplicateListingRequest) returns (DuplicateReport);
+  rpc AnalyzeUserBehavior(UserBehaviorRequest) returns (UserBehaviorResponse);
+  rpc AnalyzeImages(ImageAnalysisRequest) returns (ImageAnalysisResponse);
 }
 
-message AnalyzeImageRequest {
-  string request_id = 1;
-  bytes image_data = 2;
-  string image_format = 3;
-  string listing_id = 4;
+message UserBehaviorRequest {
+  string user_id = 1;
+  repeated string action_history = 2;
+  string ip_hash = 3;
+  int32 account_age_days = 4;
 }
 
-message FraudReport {
-  string request_id = 1;
-  float overall_score = 2;
-  ELAResult ela = 3;
-  FFTResult fft = 4;
-  EXIFResult exif = 5;
-  ReverseImageResult reverse_image = 6;
-  string explanation = 7;
-  repeated FlaggedRegion flagged_regions = 8;
+message UserBehaviorResponse {
+  string user_id = 1;
+  double risk_score = 2;
+  repeated string risk_factors = 3;
 }
 
-message ELAResult {
-  float score = 1;
-  bytes heatmap = 2;
-  string details = 3;
-}
-
-message FFTResult {
-  float score = 1;
-  repeated string detected_patterns = 2;
-  string details = 3;
-}
-
-message EXIFResult {
-  float score = 1;
-  map<string, string> metadata = 2;
-  repeated string anomalies = 3;
-  string details = 4;
-}
-
-message ReverseImageResult {
-  float score = 1;
-  repeated string matched_urls = 2;
-  string details = 3;
-}
-
-message FlaggedRegion {
-  float x = 1;
-  float y = 2;
-  float width = 3;
-  float height = 4;
-  string reason = 5;
-}
-
-message PriceAnomalyRequest {
-  string request_id = 1;
-  string listing_id = 2;
-  float listing_price = 3;
-  float latitude = 4;
-  float longitude = 5;
-  string city = 6;
-  string property_type = 7;
-  float size_sqm = 8;
-  int32 num_rooms = 9;
-  repeated string amenities = 10;
-  repeated ComparableListing comparables = 11;
-}
-
-message ComparableListing {
+message ImageAnalysisRequest {
   string listing_id = 1;
-  float price = 2;
-  float size_sqm = 3;
-  float latitude = 4;
-  float longitude = 5;
-  int32 num_rooms = 6;
+  repeated string image_cids = 2;
 }
 
-message PriceAnomalyReport {
-  string request_id = 1;
-  float anomaly_score = 2;
-  float market_median = 3;
-  float market_std_dev = 4;
-  float z_score = 5;
-  int32 comparable_count = 6;
-  float confidence = 7;
-  string explanation = 8;
-  repeated string comparable_ids = 9;
+message ImageAnalysisResponse {
+  string listing_id = 1;
+  repeated ImageResult results = 2;
 }
 
-message DuplicateListingRequest {
-  string request_id = 1;
-  string listing_id = 2;
-  string title = 3;
-  string description = 4;
-  repeated string image_phashes = 5;
-  float latitude = 6;
-  float longitude = 7;
-}
-
-message DuplicateReport {
-  string request_id = 1;
-  float duplication_score = 2;
-  float text_similarity = 3;
-  float image_similarity = 4;
-  float location_proximity = 5;
-  repeated string matched_listing_ids = 6;
-  string summary = 7;
+message ImageResult {
+  string image_cid = 1;
+  bool is_authentic = 2;
+  double manipulation_score = 3;
+  repeated string findings = 4;
 }

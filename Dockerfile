@@ -1,17 +1,14 @@
 # Stage 1: Builder
 FROM python:3.14-slim AS builder
-COPY --from=ghcr.io/astral-sh/uv:0.11.3 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.7.12 /uv /uvx /bin/
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 WORKDIR /app
 
-# Install system build dependencies
+# System deps for numpy/scikit-learn/Pillow compilation
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    protobuf-compiler \
-    libjpeg-dev \
-    zlib1g-dev \
-    libpng-dev \
+    build-essential gcc g++ \
+    libjpeg-dev zlib1g-dev libpng-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Cached dependency layer
@@ -26,23 +23,25 @@ COPY src/ src/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --no-editable
 
-# Generate gRPC stubs from proto files
-RUN if [ -d src/grpc/proto ] && ls src/grpc/proto/*.proto 1>/dev/null 2>&1; then \
-    .venv/bin/python -m grpc_tools.protoc \
-        -Isrc/grpc/proto \
-        --python_out=src \
-        --grpc_python_out=src \
-        src/grpc/proto/*.proto 2>/dev/null || true; \
-    fi
+# Generate protobuf stubs and fix imports for package mode
+RUN .venv/bin/python -m grpc_tools.protoc \
+    -Isrc/grpc/proto \
+    --python_out=src \
+    --grpc_python_out=src \
+    src/grpc/proto/fraud_detection.proto \
+    src/grpc/proto/matching.proto \
+    src/grpc/proto/lease_analysis.proto \
+    src/grpc/proto/search.proto
+
+RUN find src -name '*_pb2_grpc.py' -exec \
+    sed -i 's/^import \(.*\)_pb2/from src import \1_pb2/' {} +
 
 # Stage 2: Runtime
 FROM python:3.14-slim
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libjpeg62-turbo \
-    zlib1g \
-    libpng16-16t64 \
+    libjpeg62-turbo zlib1g libpng16-16t64 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd --system --gid 1001 pliq && \

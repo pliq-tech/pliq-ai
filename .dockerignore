@@ -4,5 +4,6 @@ __pycache__/
 .python-version
 .git/
 *.md
+!README.md
 .env
 .DS_Store

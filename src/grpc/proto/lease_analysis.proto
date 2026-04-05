@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package pliq.ai.v1;
+
+service LeaseAnalysisService {
+  rpc AnalyzeClauses(ClauseAnalysisRequest) returns (ClauseAnalysisResponse);
+  rpc CompareConditionReports(ConditionReportRequest) returns (ConditionReportResponse);
+}
+
+message ClauseAnalysisRequest {
+  string request_id = 1;
+  string lease_text = 2;
+  string language = 3;
+}
+
+message ClauseAnalysisResponse {
+  string request_id = 1;
+  repeated Clause clauses = 2;
+  string overall_assessment = 3;
+  int32 high_risk_count = 4;
+  int32 medium_risk_count = 5;
+}
+
+message Clause {
+  string clause_type = 1;
+  string text = 2;
+  int32 start_position = 3;
+  int32 end_position = 4;
+  string risk_level = 5;
+  string explanation = 6;
+}
+
+message ConditionReportRequest {
+  string request_id = 1;
+  string lease_id = 2;
+  repeated RoomPhotos check_in = 3;
+  repeated RoomPhotos check_out = 4;
+}
+
+message RoomPhotos {
+  string room_label = 1;
+  repeated bytes photos = 2;
+  repeated string photo_formats = 3;
+}
+
+message ConditionReportResponse {
+  string request_id = 1;
+  repeated RoomComparison rooms = 2;
+  string overall_summary = 3;
+  float total_estimated_cost_min = 4;
+  float total_estimated_cost_max = 5;
+}
+
+message RoomComparison {
+  string room_label = 1;
+  repeated DamageItem damages = 2;
+  string status = 3;
+  string narrative = 4;
+  float estimated_cost_min = 5;
+  float estimated_cost_max = 6;
+}
+
+message DamageItem {
+  string description = 1;
+  string severity = 2;
+  string location_in_image = 3;
+}

@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package pliq.ai.v1;
+
+service SearchService {
+  rpc SearchProperties(SearchRequest) returns (SearchResponse);
+  rpc GetSearchSuggestions(SuggestionRequest) returns (SuggestionResponse);
+}
+
+message SearchRequest {
+  string request_id = 1;
+  string tenant_id = 2;
+  string query = 3;
+  string verification_level = 4;
+  repeated string session_context = 5;
+}
+
+message SearchResponse {
+  string request_id = 1;
+  repeated SearchResult results = 2;
+  repeated string suggested_refinements = 3;
+}
+
+message SearchResult {
+  string listing_id = 1;
+  float relevance_score = 2;
+  string explanation = 3;
+}
+
+message SuggestionRequest {
+  string request_id = 1;
+  string partial_query = 2;
+  string tenant_id = 3;
+}
+
+message SuggestionResponse {
+  string request_id = 1;
+  repeated string suggestions = 2;
+}

@@ -30,6 +30,22 @@ class Config(BaseSettings):
     fraud_detection_threshold: float = Field(
         default=0.7, alias="FRAUD_DETECTION_THRESHOLD"
     )
+    price_anomaly_z_threshold: float = Field(
+        default=2.0, alias="PRICE_ANOMALY_Z_THRESHOLD"
+    )
+    duplication_text_threshold: float = Field(
+        default=0.85, alias="DUPLICATION_TEXT_THRESHOLD"
+    )
+    duplication_phash_threshold: int = Field(
+        default=10, alias="DUPLICATION_PHASH_THRESHOLD"
+    )
+
+    commute_weight: float = Field(default=0.25, alias="COMMUTE_WEIGHT")
+    noise_weight: float = Field(default=0.15, alias="NOISE_WEIGHT")
+    amenity_weight: float = Field(default=0.15, alias="AMENITY_WEIGHT")
+    social_weight: float = Field(default=0.10, alias="SOCIAL_WEIGHT")
+    budget_weight: float = Field(default=0.25, alias="BUDGET_WEIGHT")
+    pet_weight: float = Field(default=0.10, alias="PET_WEIGHT")
 
     log_level: str = Field(default="info", alias="LOG_LEVEL")
 

@@ -272,3 +272,5 @@ class PriceAnomalyDetector:
             comparable_count=len(comparable_prices),
             explanation=f"Price is {abs(z_score):.1f} std devs {direction} median ({median:.0f})",
         )
+
+
